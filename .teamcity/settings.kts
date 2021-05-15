@@ -71,12 +71,7 @@ object VscBase : LgsmRoots("lgsm-base")
 object VscVHServer : LgsmRoots("vhserver")
 object VscARKServer : LgsmRoots("arkserver")
 
-fun allVscs(): ArrayList<LgsmRoots> {
-    return arrayListOf(
-        VscBase,
-        VscVHServer,
-        VscARKServer)
-}
+
 
 project {
     /*allVscs().forEach {
@@ -90,8 +85,7 @@ project {
     subProjectsOrder = arrayListOf(
         RelativeId("BaseProj"),
         RelativeId("VHServerProj"),
-        RelativeId("ARKServerProj")
-    )
+        RelativeId("ARKServerProj"))
 }
 
 object BaseProj : Project({
