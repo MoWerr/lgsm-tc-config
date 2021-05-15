@@ -30,111 +30,14 @@ version = "2020.2"
 
 project {
     allVscs().forEach {
-        it.register(this)
+        vcsRoot(it.master)
+        vcsRoot(it.dev)
     }
 
-    subProject(BaseProj)
-    subProject(VHServerProj)
-    subProject(ARKServerProj)
+    allProjects().forEach {
+        subProject(it)
+    }
 
-    subProjectsOrder = arrayListOf(
-        RelativeId("BaseProj"),
-        RelativeId("VHServerProj"),
-        RelativeId("ARKServerProj"))
+    subProjectsOrder = allProjects()
 }
 
-object BaseProj : Project({
-    name = "base"
-
-    //buildType(BuildDockerImage(VscBase.master, "latest"))
-    //subProject(DevProj("master", BaseDevRoot))
-})
-
-object VHServerProj : Project({
-    name = "vhserver"
-
-    //buildType(BuildDockerImage(VscVHServer.master, "latest"))
-    //subProject(DevProj("main", VHServerDevRoot))
-})
-
-object ARKServerProj : Project({
-    name = "arkserver"
-
-    //buildType(BuildDockerImage(VscARKServer.master, "latest"))
-    //subProject(DevProj("master", ARKServerDevRoot))
-})
-
-open class BuildDockerImage(vcsRoot: LgsmRoot, buildTag: String) : BuildType({
-    val id: String = "build_lgsm_${vcsRoot.repoName}_${vcsRoot.branchName}";
-    id (id.toExtId())
-
-    name = "Build"
-
-    vcs {
-        this.root(vcsRoot)
-    }
-
-    steps {
-        dockerCommand {
-            name = "Build image"
-            commandType = build {
-                source = file {
-                    path = "Dockerfile"
-                }
-                namesAndTags = "mowerr/${vcsRoot.repoName}:${buildTag}"
-                commandArgs = "--pull"
-            }
-            param("dockerImage.platform", "linux")
-        }
-
-        dockerCommand {
-            name = "Push image"
-            commandType = push {
-                namesAndTags = "mowerr/${vcsRoot.repoName}:${buildTag}"
-            }
-        }
-    }
-
-    triggers {
-        vcs {
-            branchFilter = "+:<default>"
-        }
-    }
-})
-/*
-open class DevProj(mainBranch: String, vcsRoot: LgsmRoot) : Project({
-    val projId = "proj_dev_${vcsRoot.repoName}_${vcsRoot.branchName}"
-    id (projId.toExtId())
-
-    name = "dev"
-
-    val build = BuildDockerImage(vcsRoot, "dev")
-
-    buildType(build)
-    buildType(PromoteToStable(vcsRoot, mainBranch, build))
-})
-
-open class PromoteToStable(vcsRoot: LgsmRoot, destBranch: String, dependency: BuildType) : BuildType({
-    val promoteId = "promote_lgsm_${vcsRoot.repoName}_${vcsRoot.branchName}"
-    id(promoteId.toExtId())
-
-    name = "Promote to Stable"
-
-    vcs {
-        root(vcsRoot)
-    }
-
-    features {
-        merge {
-            branchFilter = "+:<default>"
-            destinationBranch = destBranch
-        }
-    }
-
-    dependencies {
-        snapshot(dependency) {
-            runOnSameAgent = true
-            onDependencyFailure = FailureAction.FAIL_TO_START
-        }
-    }
-})*/
