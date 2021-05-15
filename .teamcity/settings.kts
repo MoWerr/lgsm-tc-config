@@ -36,7 +36,7 @@ fun generateId(type: String, repoName: String, branchName: String): String {
 fun generateId(type: String, vcsRoot: LgsmRoot): String = generateId(type, vcsRoot.repoName, vcsRoot.branchName)
 
 open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
-    val rootId = generateId("vcs", repoName, branchName)
+    val rootId = "vsc_${repoName}_${branchName}"
     id(rootId.toExtId())
 
     name = "${repoName}_${branchName}"
