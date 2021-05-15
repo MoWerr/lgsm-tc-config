@@ -2,6 +2,7 @@ import jetbrains.buildServer.configs.kotlin.v10.toExtId
 import jetbrains.buildServer.configs.kotlin.v2019_2.*
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.merge
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
+import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.finishBuildTrigger
 import jetbrains.buildServer.configs.kotlin.v2019_2.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
 
@@ -29,8 +30,15 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 
 version = "2020.2"
 
+fun generateId(type: String, repoName: String, branchName: String): String {
+    val id = "${type}${repoName}${branchName}"
+    return id.toExtId()
+}
+
+fun generateId(type: String, vcsRoot: LgsmRoot): String = generateId(type, vcsRoot.repoName, vcsRoot.branchName)
+
 open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
-    val rootId = "vcs_lgsm_${repoName}_${branchName}"
+    val rootId = generateId("vcs", repoName, branchName)
     id(rootId.toExtId())
 
     name = "${repoName}_${branchName}"
@@ -49,22 +57,33 @@ open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
     val branchName : String = branchName
 }
 
-object BaseMasterRoot : LgsmRoot("lgsm-base", "master")
-object BaseDevRoot : LgsmRoot("lgsm-base", "dev")
+open class LgsmRoots(repoName: String)
+{
+    val master = LgsmRoot(repoName, "master")
+    val dev = LgsmRoot(repoName, "dev")
 
-object VHServerMasterRoot : LgsmRoot("vhserver", "main")
-object VHServerDevRoot : LgsmRoot("vhserver", "dev")
+    fun register(proj: Project)
+    {
+        proj.vcsRoot(master)
+        proj.vcsRoot(dev)
+    }
+}
 
-object ARKServerMasterRoot : LgsmRoot("arkserver", "master")
-object ARKServerDevRoot : LgsmRoot("arkserver", "dev")
+object VscBase : LgsmRoots("lgsm-base")
+object VscVHServer : LgsmRoots("vhserver")
+object VscARKServer : LgsmRoots("arkserver")
+
+fun allVscs(): ArrayList<LgsmRoots> {
+    return arrayListOf(
+        VscBase,
+        VscVHServer,
+        VscARKServer)
+}
 
 project {
-    vcsRoot(BaseMasterRoot)
-    vcsRoot(BaseDevRoot)
-    vcsRoot(VHServerMasterRoot)
-    vcsRoot(VHServerDevRoot)
-    vcsRoot(ARKServerMasterRoot)
-    vcsRoot(ARKServerDevRoot)
+    allVscs().forEach {
+        it.register(this)
+    }
 
     subProject(BaseProj)
     subProject(VHServerProj)
@@ -80,22 +99,22 @@ project {
 object BaseProj : Project({
     name = "base"
 
-    buildType(BuildDockerImage(BaseMasterRoot, "latest"))
-    subProject(DevProj("master", BaseDevRoot))
+    buildType(BuildDockerImage(VscBase.master, "latest"))
+    //subProject(DevProj("master", BaseDevRoot))
 })
 
 object VHServerProj : Project({
     name = "vhserver"
 
-    buildType(BuildDockerImage(VHServerMasterRoot, "latest"))
-    subProject(DevProj("main", VHServerDevRoot))
+    buildType(BuildDockerImage(VscVHServer.master, "latest"))
+    //subProject(DevProj("main", VHServerDevRoot))
 })
 
 object ARKServerProj : Project({
     name = "arkserver"
 
-    buildType(BuildDockerImage(ARKServerMasterRoot, "latest"))
-    subProject(DevProj("master", ARKServerDevRoot))
+    buildType(BuildDockerImage(VscARKServer.master, "latest"))
+    //subProject(DevProj("master", ARKServerDevRoot))
 })
 
 open class BuildDockerImage(vcsRoot: LgsmRoot, buildTag: String) : BuildType({
@@ -135,7 +154,7 @@ open class BuildDockerImage(vcsRoot: LgsmRoot, buildTag: String) : BuildType({
         }
     }
 })
-
+/*
 open class DevProj(mainBranch: String, vcsRoot: LgsmRoot) : Project({
     val projId = "proj_dev_${vcsRoot.repoName}_${vcsRoot.branchName}"
     id (projId.toExtId())
@@ -171,4 +190,4 @@ open class PromoteToStable(vcsRoot: LgsmRoot, destBranch: String, dependency: Bu
             onDependencyFailure = FailureAction.FAIL_TO_START
         }
     }
-})
+})*/
