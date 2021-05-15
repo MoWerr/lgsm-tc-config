@@ -35,8 +35,7 @@ class Utils{
     }
 }
 
-fun generateId(): Unit {
-}
+
 
 //fun generateId(type: String, vcsRoot: LgsmRoot): String = generateId(type, vcsRoot.repoName, vcsRoot.branchName)
 
