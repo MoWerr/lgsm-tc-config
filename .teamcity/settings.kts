@@ -28,13 +28,13 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 
 version = "2020.2"
 
-fun generateId(type: String?, repoName: String?, branchName: String?): Unit {
+fun generateId(): Unit {
 }
 
 //fun generateId(type: String, vcsRoot: LgsmRoot): String = generateId(type, vcsRoot.repoName, vcsRoot.branchName)
 
-open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
-    generateId("vsc", repoName, branchName)
+open class LgsmRoot(val repoName: String, val branchName: String) : GitVcsRoot({
+    generateId()
     id("testUniqueId")
 
     name = "${repoName}_${branchName}"
@@ -48,10 +48,6 @@ open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
         password = "credentialsJSON:dd6f958d-e26e-4097-b397-6fa58ecba288"
     }
 })
-{
-    val repoName: String = repoName
-    val branchName : String = branchName
-}
 
 open class LgsmRoots(val master: LgsmRoot) {
 //    val master = LgsmRoot(repoName, "master")
