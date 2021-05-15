@@ -1,12 +1,14 @@
+import jetbrains.buildServer.configs.kotlin.v2019_2.AbsoluteId
 import jetbrains.buildServer.configs.kotlin.v2019_2.BuildType
 import jetbrains.buildServer.configs.kotlin.v2019_2.FailureAction
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.merge
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
+import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.finishBuildTrigger
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
 
-open class BuildDockerImage(vcsRoot: LgsmRoot) : BuildType({
+open class BuildDockerImage(vcsRoot: LgsmRoot, baseProject: String? = null) : BuildType({
     val buildTag = getDockerTag(vcsRoot.branchType)
-    id (generateId("build", vcsRoot))
+    id (generateId(IdType.Build, vcsRoot))
 
     name = "Build"
 
@@ -39,11 +41,27 @@ open class BuildDockerImage(vcsRoot: LgsmRoot) : BuildType({
         vcs {
             branchFilter = "+:<default>"
         }
+
+        if (baseProject != null) {
+            finishBuildTrigger {
+                buildType
+                successfulOnly = true
+            }
+        }
+    }
+
+    if (baseProject != null) {
+        dependencies {
+            snapshot(AbsoluteId(baseProject)) {
+                runOnSameAgent = true
+                onDependencyFailure = FailureAction.FAIL_TO_START
+            }
+        }
     }
 })
 
 open class PromoteToStable(vcsRoot: LgsmRoot, dependency: BuildType) : BuildType({
-    id(generateId("promote", vcsRoot))
+    id(generateId(IdType.Promote, vcsRoot))
     name = "Promote to Stable"
 
     vcs {
