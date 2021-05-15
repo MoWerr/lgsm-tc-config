@@ -28,45 +28,11 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 
 version = "2020.2"
 
-open class LgsmRoot(val repoName: String, val branchName: String) : GitVcsRoot({
-    id(generateId("vsc", repoName, branchName))
-
-    name = "${repoName}_${branchName}"
-    url = "https://github.com/MoWerr/${repoName}"
-    branch = "refs/heads/${branchName}"
-    branchSpec = "+:refs/heads/*"
-    userForTags = "tc_mower"
-
-    authMethod = password {
-        userName = "MoWerr"
-        password = "credentialsJSON:dd6f958d-e26e-4097-b397-6fa58ecba288"
-    }
-})
-
-open class LgsmRoots(val master: LgsmRoot) {
-//    val master = LgsmRoot(repoName, "master")
-//    val dev = LgsmRoot(repoName, "dev")
-//
-    fun register(proj: Project): Unit {
-        proj.vcsRoot(master)
-//        proj.vcsRoot(dev)
-    }
-}
-
-
-//object VscBase : LgsmRoots(LgsmRoot("base-lgsm", "master"))
-object VscBase : LgsmRoot("base-lgsm", "master")
-
-//object VscVHServer : LgsmRoots("vhserver")
-//object VscARKServer : LgsmRoots("arkserver")
-
-
-
 project {
-    /*allVscs().forEach {
+    allVscs().forEach {
         it.register(this)
     }
-*/
+
     subProject(BaseProj)
     subProject(VHServerProj)
     subProject(ARKServerProj)
