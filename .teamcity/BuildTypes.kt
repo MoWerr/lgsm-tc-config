@@ -6,9 +6,9 @@ import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.finishBuildTrigger
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
 
-open class BuildDockerImage(vcsRoot: LgsmRoot, baseProject: String? = null) : BuildType({
+open class BuildDockerImage(vcsRoot: LgsmRoot, baseProject: AbsoluteId? = null) : BuildType({
     val buildTag = getDockerTag(vcsRoot.branchType)
-    id (generateId(IdType.Build, vcsRoot))
+    id (generateId(IdType.Build, vcsRoot).relativeId)
 
     name = "Build"
 
@@ -44,7 +44,7 @@ open class BuildDockerImage(vcsRoot: LgsmRoot, baseProject: String? = null) : Bu
 
         if (baseProject != null) {
             finishBuildTrigger {
-                buildType
+                buildType = baseProject.absoluteId
                 successfulOnly = true
             }
         }
@@ -52,7 +52,7 @@ open class BuildDockerImage(vcsRoot: LgsmRoot, baseProject: String? = null) : Bu
 
     if (baseProject != null) {
         dependencies {
-            snapshot(AbsoluteId(baseProject)) {
+            snapshot(baseProject) {
                 runOnSameAgent = true
                 onDependencyFailure = FailureAction.FAIL_TO_START
             }
@@ -61,7 +61,7 @@ open class BuildDockerImage(vcsRoot: LgsmRoot, baseProject: String? = null) : Bu
 })
 
 open class PromoteToStable(vcsRoot: LgsmRoot, dependency: BuildType) : BuildType({
-    id(generateId(IdType.Promote, vcsRoot))
+    id(generateId(IdType.Promote, vcsRoot).relativeId)
     name = "Promote to Stable"
 
     vcs {
