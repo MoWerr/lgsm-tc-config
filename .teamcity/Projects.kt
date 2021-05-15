@@ -11,7 +11,7 @@ open class ProjDev(vcsRoot: LgsmRoot, baseProject: String? = null) : Project({
     id(generateId(IdType.Project, vcsRoot))
     name = "dev"
 
-    val build = BuildDockerImage(vcsRoot)
+    val build = BuildDockerImage(vcsRoot, baseProject)
 
     buildType(build)
     buildType(PromoteToStable(vcsRoot, build))
