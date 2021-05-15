@@ -28,13 +28,17 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 
 version = "2020.2"
 
-fun generateId(): Unit {
+class Utils{
+    companion object{
+        fun generateId(): Unit {
+        }
+    }
 }
 
 //fun generateId(type: String, vcsRoot: LgsmRoot): String = generateId(type, vcsRoot.repoName, vcsRoot.branchName)
 
 open class LgsmRoot(val repoName: String, val branchName: String) : GitVcsRoot({
-    generateId()
+    Utils.generateId()
     id("testUniqueId")
 
     name = "${repoName}_${branchName}"
