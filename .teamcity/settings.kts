@@ -46,6 +46,11 @@ project {
     subProject(BaseProj)
     subProject(VHServerProj)
     subProject(ARKServerProj)
+
+    subProjectsOrder = arrayListOf(
+        RelativeId("base"),
+        RelativeId("vhserver"),
+        RelativeId("arkserver"))
 }
 
 object BaseProj : Project({
