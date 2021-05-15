@@ -91,21 +91,21 @@ project {
 object BaseProj : Project({
     name = "base"
 
-    buildType(BuildDockerImage(VscBase.master, "latest"))
+    //buildType(BuildDockerImage(VscBase.master, "latest"))
     //subProject(DevProj("master", BaseDevRoot))
 })
 
 object VHServerProj : Project({
     name = "vhserver"
 
-    buildType(BuildDockerImage(VscVHServer.master, "latest"))
+    //buildType(BuildDockerImage(VscVHServer.master, "latest"))
     //subProject(DevProj("main", VHServerDevRoot))
 })
 
 object ARKServerProj : Project({
     name = "arkserver"
 
-    buildType(BuildDockerImage(VscARKServer.master, "latest"))
+    //buildType(BuildDockerImage(VscARKServer.master, "latest"))
     //subProject(DevProj("master", ARKServerDevRoot))
 })
 
