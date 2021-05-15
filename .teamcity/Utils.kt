@@ -10,6 +10,10 @@ fun getDockerTag(branchType: BranchType) = when(branchType) {
     BranchType.Master -> "latest"
     BranchType.Dev -> "dev"
 }
+fun getBuildTrigger(branchType: BranchType) = when(branchType) {
+    BranchType.Master -> BuildAll
+    BranchType.Dev -> BuildAllDev
+}
 
 fun getIdTypeName(idType: IdType) = idType.name.toLowerCase()
 

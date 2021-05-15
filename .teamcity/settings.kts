@@ -1,8 +1,5 @@
-import jetbrains.buildServer.configs.kotlin.v10.toExtId
-import jetbrains.buildServer.configs.kotlin.v2019_2.*
-import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
-import jetbrains.buildServer.configs.kotlin.v2019_2.vcs.GitVcsRoot
-import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
+import jetbrains.buildServer.configs.kotlin.v2019_2.project
+import jetbrains.buildServer.configs.kotlin.v2019_2.version
 
 /*
 The settings script is an entry point for defining a TeamCity
@@ -38,6 +35,10 @@ project {
         subProject(it)
     }
 
-    subProjectsOrder = allProjects()
-}
+    allRootBuilds().forEach {
+        buildType(it)
+    }
 
+    subProjectsOrder = allProjects()
+    buildTypesOrder = allRootBuilds()
+}
