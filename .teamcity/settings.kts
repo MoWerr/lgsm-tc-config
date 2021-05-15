@@ -29,8 +29,7 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 version = "2020.2"
 
 fun generateId(type: String?, repoName: String?, branchName: String?): String {
-    val id = "${type}${repoName}${branchName}"
-    return id.toExtId()
+    return "testUniqueId"
 }
 
 //fun generateId(type: String, vcsRoot: LgsmRoot): String = generateId(type, vcsRoot.repoName, vcsRoot.branchName)
