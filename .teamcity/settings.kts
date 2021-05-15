@@ -35,10 +35,13 @@ class Utils{
     }
 }
 
+fun generateId(): Unit {
+}
+
 //fun generateId(type: String, vcsRoot: LgsmRoot): String = generateId(type, vcsRoot.repoName, vcsRoot.branchName)
 
 open class LgsmRoot(val repoName: String, val branchName: String) : GitVcsRoot({
-    Utils.generateId()
+    generateId()
     id("testUniqueId")
 
     name = "${repoName}_${branchName}"
