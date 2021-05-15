@@ -18,7 +18,7 @@ open class ProjDev(vcsRoot: LgsmRoot, baseProject: AbsoluteId? = null) : Project
     buildType(PromoteToStable(vcsRoot, build))
 })
 
-object ProjBase : MainSubproject(VcsBase)
+object ProjBase : MainSubproject(VcsBase, AbsoluteId("UbuntuBase_Stable_Build"))
 object ProjVHServer : MainSubproject(VcsVHServer, generateAbsoluteId(IdType.Build, VcsBase.master))
 object ProjArkServer : MainSubproject(VcsARKServer, generateAbsoluteId(IdType.Build, VcsBase.master))
 
