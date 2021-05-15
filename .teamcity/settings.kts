@@ -55,14 +55,14 @@ open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
     val branchName : String = branchName
 }
 
-open class LgsmRoots(repoName: String) {
+open class LgsmRoots(val master: LgsmRoot) {
 //    val master = LgsmRoot(repoName, "master")
 //    val dev = LgsmRoot(repoName, "dev")
 //
-//    fun register(proj: Project): Unit {
-//        proj.vcsRoot(master)
+    fun register(proj: Project): Unit {
+        proj.vcsRoot(master)
 //        proj.vcsRoot(dev)
-//    }
+    }
 }
 
 /*
