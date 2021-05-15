@@ -149,6 +149,9 @@ open class DevProj(mainBranch: String, vcsRoot: LgsmRoot) : Project({
 })
 
 open class PromoteToStable(vcsRoot: LgsmRoot, destBranch: String, dependency: BuildType) : BuildType({
+    val promoteId = "promote_lgsm_${vcsRoot.repoName}_${vcsRoot.branchName}"
+    id(promoteId.toExtId())
+
     name = "Promote to Stable"
 
     vcs {
