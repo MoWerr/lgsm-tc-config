@@ -55,7 +55,7 @@ open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
     val branchName : String = branchName
 }
 
-
+/*
 open class LgsmRoots(repoName: String) {
     val master = LgsmRoot(repoName, "master")
     val dev = LgsmRoot(repoName, "dev")
@@ -66,6 +66,9 @@ open class LgsmRoots(repoName: String) {
         proj.vcsRoot(dev)
     }
 }
+
+*/
+ 
 /*
 object VscBase : LgsmRoots("lgsm-base")
 object VscVHServer : LgsmRoots("vhserver")
