@@ -7,7 +7,7 @@ import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.finishBuildTrigger
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
 
-open class BuildDockerImage(vcsRoot: LgsmRoot, baseProject: AbsoluteId? = null, includeTrigger = false) : BuildType({
+open class BuildDockerImage(vcsRoot: LgsmRoot, baseProject: AbsoluteId? = null, includeTrigger: bool = false) : BuildType({
     val buildTag = getDockerTag(vcsRoot.branchType)
     val buildAllTrigger = getBuildTrigger(vcsRoot.branchType)
 
