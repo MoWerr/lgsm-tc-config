@@ -65,11 +65,11 @@ open class LgsmRoots(val master: LgsmRoot) {
     }
 }
 
-/*
-object VscBase : LgsmRoots("lgsm-base")
-object VscVHServer : LgsmRoots("vhserver")
-object VscARKServer : LgsmRoots("arkserver")
-*/
+
+object VscBase : LgsmRoots(LgsmRoot("base-lgsm", "master"))
+//object VscVHServer : LgsmRoots("vhserver")
+//object VscARKServer : LgsmRoots("arkserver")
+
 
 
 project {
