@@ -1,8 +1,6 @@
 import jetbrains.buildServer.configs.kotlin.v10.toExtId
 import jetbrains.buildServer.configs.kotlin.v2019_2.*
-import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.merge
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
-import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.finishBuildTrigger
 import jetbrains.buildServer.configs.kotlin.v2019_2.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
 
@@ -81,10 +79,10 @@ fun allVscs(): ArrayList<LgsmRoots> {
 }
 
 project {
-    allVscs().forEach {
+    /*allVscs().forEach {
         it.register(this)
     }
-
+*/
     subProject(BaseProj)
     subProject(VHServerProj)
     subProject(ARKServerProj)
