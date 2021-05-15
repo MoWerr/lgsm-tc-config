@@ -28,14 +28,14 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 
 version = "2020.2"
 
-fun generateId(type: String?, repoName: String?, branchName: String?): String {
-    return "testUniqueId"
+fun generateId(type: String?, repoName: String?, branchName: String?): Unit {
 }
 
 //fun generateId(type: String, vcsRoot: LgsmRoot): String = generateId(type, vcsRoot.repoName, vcsRoot.branchName)
 
 open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
-    id(generateId("vsc", repoName, branchName))
+    generateId("vsc", repoName, branchName)
+    id("testUniqueId")
 
     name = "${repoName}_${branchName}"
     url = "https://github.com/MoWerr/${repoName}"
