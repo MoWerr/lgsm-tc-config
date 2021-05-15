@@ -1,6 +1,8 @@
 import jetbrains.buildServer.configs.kotlin.v10.toExtId
 import jetbrains.buildServer.configs.kotlin.v2019_2.*
+import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.v2019_2.vcs.GitVcsRoot
+import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
 
 /*
 The settings script is an entry point for defining a TeamCity
@@ -27,7 +29,7 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 version = "2020.2"
 
 open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
-    val rootId = "lgsm_${repoName}_${branchName}"
+    val rootId = "vcs_lgsm_${repoName}_${branchName}"
     id(rootId.toExtId())
 
     name = branchName
@@ -41,26 +43,91 @@ open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
         password = "credentialsJSON:dd6f958d-e26e-4097-b397-6fa58ecba288"
     }
 })
+{
+    val repoName: String = repoName
+    val branchName : String = branchName
+}
+
+object BaseMasterRoot : LgsmRoot("lgsm-base", "master")
+object BaseDevRoot : LgsmRoot("lgsm-base", "dev")
+
+object VHServerMasterRoot : LgsmRoot("vhserver", "main")
+object VHServerDevRoot : LgsmRoot("vhserver", "dev")
+
+object ARKServerMasterRoot : LgsmRoot("arkserver", "master")
+object ARKServerDevRoot : LgsmRoot("arkserver", "dev")
 
 project {
+    vcsRoot(BaseMasterRoot)
+    vcsRoot(BaseDevRoot)
+    vcsRoot(VHServerMasterRoot)
+    vcsRoot(VHServerDevRoot)
+    vcsRoot(ARKServerMasterRoot)
+    vcsRoot(ARKServerDevRoot)
+
     subProject(BaseProj)
     subProject(VHServerProj)
     subProject(ARKServerProj)
 
     subProjectsOrder = arrayListOf(
-        RelativeId("base"),
-        RelativeId("vhserver"),
-        RelativeId("arkserver"))
+        RelativeId("BaseProj"),
+        RelativeId("VHServerProj"),
+        RelativeId("ARKServerProj")
+    )
 }
 
 object BaseProj : Project({
     name = "base"
+
+    buildType(BuildDockerImage(BaseMasterRoot, "latest"))
 })
 
 object VHServerProj : Project({
     name = "vhserver"
+
+    buildType(BuildDockerImage(VHServerMasterRoot, "latest"))
 })
 
 object ARKServerProj : Project({
     name = "arkserver"
+
+    buildType(BuildDockerImage(ARKServerMasterRoot, "latest"))
+})
+
+open class BuildDockerImage(vcsRoot: LgsmRoot, buildTag: String) : BuildType({
+    val id: String = "build_lgsm_${vcsRoot.repoName}_${vcsRoot.branchName}";
+    id (id.toExtId())
+
+    name = "Build"
+
+    vcs {
+        this.root(vcsRoot)
+    }
+
+    steps {
+        dockerCommand {
+            name = "Build image"
+            commandType = build {
+                source = file {
+                    path = "Dockerfile"
+                }
+                namesAndTags = "mowerr/${vcsRoot.repoName}:${buildTag}"
+                commandArgs = "--pull"
+            }
+            param("dockerImage.platform", "linux")
+        }
+
+        dockerCommand {
+            name = "Push image"
+            commandType = push {
+                namesAndTags = "mowerr/${vcsRoot.repoName}:${buildTag}"
+            }
+        }
+    }
+
+    triggers {
+        vcs {
+            branchFilter = "+:<default>"
+        }
+    }
 })
