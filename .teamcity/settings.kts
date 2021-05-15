@@ -43,9 +43,9 @@ open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
 })
 
 project {
-    project(BaseProj)
-    project(VHServerProj)
-    project(ARKServerProj)
+    subProject(BaseProj)
+    subProject(VHServerProj)
+    subProject(ARKServerProj)
 }
 
 object BaseProj : Project({
