@@ -32,7 +32,7 @@ open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
     val rootId = "vcs_lgsm_${repoName}_${branchName}"
     id(rootId.toExtId())
 
-    name = branchName
+    name = "${repoName}_${branchName}"
     url = "https://github.com/MoWerr/${repoName}"
     branch = "refs/heads/${branchName}"
     branchSpec = "+:refs/heads/*"
