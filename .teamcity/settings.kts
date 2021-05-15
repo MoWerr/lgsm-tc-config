@@ -1,5 +1,6 @@
+import jetbrains.buildServer.configs.kotlin.v10.toExtId
 import jetbrains.buildServer.configs.kotlin.v2019_2.*
-import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
+import jetbrains.buildServer.configs.kotlin.v2019_2.vcs.GitVcsRoot
 
 /*
 The settings script is an entry point for defining a TeamCity
@@ -25,20 +26,36 @@ To debug in IntelliJ Idea, open the 'Maven Projects' tool window (View
 
 version = "2020.2"
 
-project {
+open class LgsmRoot(repoName: String, branchName: String) : GitVcsRoot({
+    val rootId = "lgsm_${repoName}_${branchName}"
+    id(rootId.toExtId())
 
-    buildType(Build)
+    name = branchName
+    url = "https://github.com/MoWerr/${repoName}"
+    branch = "refs/heads/${branchName}"
+    branchSpec = "+:refs/heads/*"
+    userForTags = "tc_mower"
+
+    authMethod = password {
+        userName = "MoWerr"
+        password = "credentialsJSON:dd6f958d-e26e-4097-b397-6fa58ecba288"
+    }
+})
+
+project {
+    project(BaseProj)
+    project(VHServerProj)
+    project(ARKServerProj)
 }
 
-object Build : BuildType({
-    name = "Build"
+object BaseProj : Project({
+    name = "base"
+})
 
-    vcs {
-        root(DslContext.settingsRoot)
-    }
+object VHServerProj : Project({
+    name = "vhserver"
+})
 
-    triggers {
-        vcs {
-        }
-    }
+object ARKServerProj : Project({
+    name = "arkserver"
 })
