@@ -1,5 +1,6 @@
 import jetbrains.buildServer.configs.kotlin.v10.toExtId
 import jetbrains.buildServer.configs.kotlin.v2019_2.*
+import jetbrains.buildServer.configs.kotlin.v2019_2.buildFeatures.merge
 import jetbrains.buildServer.configs.kotlin.v2019_2.buildSteps.dockerCommand
 import jetbrains.buildServer.configs.kotlin.v2019_2.vcs.GitVcsRoot
 import jetbrains.buildServer.configs.kotlin.v2019_2.triggers.vcs
@@ -80,18 +81,21 @@ object BaseProj : Project({
     name = "base"
 
     buildType(BuildDockerImage(BaseMasterRoot, "latest"))
+    subProject(DevProj("master", BaseDevRoot))
 })
 
 object VHServerProj : Project({
     name = "vhserver"
 
     buildType(BuildDockerImage(VHServerMasterRoot, "latest"))
+    subProject(DevProj("main", VHServerDevRoot))
 })
 
 object ARKServerProj : Project({
     name = "arkserver"
 
     buildType(BuildDockerImage(ARKServerMasterRoot, "latest"))
+    subProject(DevProj("master", ARKServerDevRoot))
 })
 
 open class BuildDockerImage(vcsRoot: LgsmRoot, buildTag: String) : BuildType({
@@ -128,6 +132,40 @@ open class BuildDockerImage(vcsRoot: LgsmRoot, buildTag: String) : BuildType({
     triggers {
         vcs {
             branchFilter = "+:<default>"
+        }
+    }
+})
+
+open class DevProj(mainBranch: String, vcsRoot: LgsmRoot) : Project({
+    val projId = "proj_dev_${vcsRoot.repoName}_${vcsRoot.branchName}"
+    id (projId.toExtId())
+
+    name = "dev"
+
+    val build = BuildDockerImage(vcsRoot, "dev")
+
+    buildType(build)
+    buildType(PromoteToStable(vcsRoot, mainBranch, build))
+})
+
+open class PromoteToStable(vcsRoot: LgsmRoot, destBranch: String, dependency: BuildType) : BuildType({
+    name = "Promote to Stable"
+
+    vcs {
+        root(vcsRoot)
+    }
+
+    features {
+        merge {
+            branchFilter = "+:<default>"
+            destinationBranch = destBranch
+        }
+    }
+
+    dependencies {
+        snapshot(dependency) {
+            runOnSameAgent = true
+            onDependencyFailure = FailureAction.FAIL_TO_START
         }
     }
 })
